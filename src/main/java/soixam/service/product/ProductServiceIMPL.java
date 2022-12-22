@@ -1,8 +1,6 @@
 package soixam.service.product;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import soixam.model.Category;
 import soixam.model.Product;
@@ -27,12 +25,12 @@ public class ProductServiceIMPL implements IProductService{
 
     @Override
     public List<Product> findAllByNameContaining(String name) {
-        return productRepository.findAllByNameContaining(name);
+        return productRepository.findAllByNameProductContaining(name);
     }
 
     @Override
     public Boolean existsByName(String name) {
-        return productRepository.existsByName(name);
+        return productRepository.existsByNameProduct(name);
     }
 
     @Override
@@ -41,8 +39,9 @@ public class ProductServiceIMPL implements IProductService{
     }
 
     @Override
-    public Product findByCategoryOrName(String name) {
-        return productRepository.findByCategoryOrName(name);
+    public List<Product> findAllByNameCategory(String nameCategory) {
+        List<Product> products = productRepository.findAllByNameCategory(nameCategory);
+        return products;
     }
 
     @Override

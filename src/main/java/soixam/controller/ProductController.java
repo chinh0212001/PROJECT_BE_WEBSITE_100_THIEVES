@@ -29,14 +29,18 @@ public class ProductController {
     private ICategoryService categoryService;
     @Autowired
     private UserDetailService userDetailService;
+    @GetMapping("search/category/{nameCategory}")
+    public ResponseEntity<?> showByIdCategory(@PathVariable String nameCategory){
+        return ResponseEntity.ok(productService.findAllByNameCategory(nameCategory));
+    }
     @PostMapping
     public ResponseEntity<?> createProduct(@RequestBody Product product){
         User currentUser = userDetailService.getCurrentUser();
-        if (productService.existsByName(product.getName())){
+        if (productService.existsByName(product.getNameProduct())){
             return new ResponseEntity<>(new ResponseMessage("product_invalid"),HttpStatus.OK);
         }
 
-        Long idCate = product.getCategory().getId();
+        Long idCate = product.getCategory().getIdCategory();
         Optional<Category> categoryOptional = categoryService.findById(idCate);
         if (!categoryOptional.isPresent()) {
             return new ResponseEntity<>(new ResponseMessage("cate_not"), HttpStatus.NOT_FOUND);
@@ -51,12 +55,12 @@ public class ProductController {
         if (!productOptional.isPresent()){
             return new ResponseEntity<>(new ResponseMessage("product_not"),HttpStatus.NOT_FOUND);
         }else {
-            productOptional.get().setName(product.getName());
+            productOptional.get().setNameProduct(product.getNameProduct());
             productOptional.get().setPrice(product.getPrice());
             productOptional.get().setAvatar(product.getAvatar());
             productOptional.get().setQuantity(product.getQuantity());
 
-            Long idCate = product.getCategory().getId();
+            Long idCate = product.getCategory().getIdCategory();
             Optional<Category> categoryOptional = categoryService.findById(idCate);
             if (!categoryOptional.isPresent()){
                 return new ResponseEntity<>(new ResponseMessage("cate_not"),HttpStatus.NOT_FOUND);
@@ -81,15 +85,15 @@ public class ProductController {
         if (!product.isPresent()){
             return new ResponseEntity<>(new ResponseMessage("product_not"),HttpStatus.NOT_FOUND);
         }
-        productService.deleteById(product.get().getId());
+        productService.deleteById(product.get().getIdProduct());
         return new ResponseEntity<>(new ResponseMessage("delete"),HttpStatus.OK);
     }
     @GetMapping
     public ResponseEntity<?>showList(){
-        List<Product>productList = productService.findAll();
+        List<Product> productList = productService.findAll();
         return new ResponseEntity<>(productList,HttpStatus.OK);
     }
-    @GetMapping("search/{name}")
+    @GetMapping("search/name/{name}")
     public ResponseEntity<?>searchNameProduct(@PathVariable String name){
         if (name.trim().equals("")){
             return new ResponseEntity<>(new ResponseMessage("not_found"),HttpStatus.OK);
